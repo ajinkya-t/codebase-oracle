@@ -70,7 +70,7 @@ Open-source document e-signing platform: Fullstack web app built with React Rout
 Users sign in with email/password, OAuth (Google, GitHub, OIDC), or passkeys (WebAuthn). Organisations can enforce SSO via OIDC. Email verification is required after signup. Sessions can be managed (viewed and revoked) from security settings.
 
 ### Error Handling
-Errors use a centralized AppError system with codes like ALREADY_EXISTS, NOT_FOUND, UNAUTHORIZED, TOO_MANY_REQUESTS, RECIPIENT_EXPIRED. On the frontend, errors are typically caught and displayed via toast notifications. For REST API responses, 500 errors show "Something went wrong" while 4xx errors surface the specific message.
+Errors use a centralized AppError system with codes like ALREADY_EXISTS, NOT_FOUND, UNAUTHORIZED, TOO_MANY_REQUESTS, RECIPIENT_EXPIRED. On the frontend, errors are typically caught and displayed via toast notifications. For REST API responses, 500 errors show "Something went wrong." 4xx errors surface the specific message in some contexts, but frontend components that use generic catch-all handlers may show "An error occurred" regardless of the specific error code — verified example: RECIPIENT_EXPIRED (400) is displayed as a generic error by the signing field component [BACKEND-DEFINED].
 
 ### Rate Limits and Quotas
 Free-tier users are limited to 5 documents. Paid plans (Individual, Pro, Early Adopter, Platform, Enterprise) have higher or unlimited quotas. Rate limiting returns TOO_MANY_REQUESTS error code (HTTP 429).

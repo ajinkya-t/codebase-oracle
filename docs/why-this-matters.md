@@ -15,21 +15,27 @@ The code becomes the ground truth, but most product people can't read it.
 
 ### 1. Spec Drift
 
-Thoughtworks' Technology Radar has documented "spec drift" as a recurring failure mode in
-product teams: the spec is written, the feature is built approximately to the spec, and
-then the spec is never updated. Over a 12-month release cycle, a non-trivial product
-can accumulate dozens of undocumented behavioral changes — small divergences that are
-invisible until they cause a support escalation, a failed integration, or a user complaint
-that nobody can reproduce because the documented behavior is wrong.
+Spec drift is not a discipline problem — it's structural. The Thoughtworks analysis of
+spec-driven development (2025) and the ArXiv paper "Spec-Driven Development: From Code to
+Contract" (Tao et al., 2025) both confirm: by Sprint 3, specs no longer match code. The
+code becomes the de facto truth. Every refactor, hotfix, and workaround introduces drift that
+nobody updates the spec for, because the maintenance cost exceeds the perceived benefit.
+
+Over a 12-month release cycle, a non-trivial product can accumulate dozens of undocumented
+behavioral changes — small divergences that are invisible until they cause a support
+escalation, a failed integration, or a user complaint that nobody can reproduce because the
+documented behavior is wrong.
 
 ### 2. Emergent Behavior
 
 Some behaviors aren't specified anywhere because they emerge from the interaction of features
-that were designed independently. The Documenso signing flow has a TOCTOU (time-of-check
-to time-of-use) vulnerability: two recipients can both open the same signing step simultaneously,
-both see it as "pending," and both complete it — resulting in a double-signing edge case
-that isn't in any spec because it emerged from the intersection of concurrent access and
-optimistic locking. The oracle finds these because it traces actual code paths, not intended
+that were designed independently. The Documenso signing flow has a theoretical TOCTOU (time-of-check
+to time-of-use) vulnerability: if the same signer submits a non-signature field (text,
+checkbox) twice in rapid succession, both submissions pass the `field.inserted` check before
+either one sets it — a race condition that isn't in any spec because it emerged from the
+intersection of concurrent requests and a check that runs outside the database transaction.
+(Fields are permanently bound to one recipient at the data model level, so two *different*
+recipients signing the same field is safe by design — the race is same-signer, same field.) The oracle finds these because it traces actual code paths, not intended
 design paths.
 
 ### 3. Undocumented Error Experiences
@@ -82,7 +88,7 @@ Running the oracle on Documenso surfaced this in the first session:
 The oracle's response (after tracing both layers):
 
 > The signer clicks a signature field and receives a generic error: "An error occurred
-> while signing the field." [RENDERED — toast handler]
+> while signing the document." [RENDERED — toast handler]
 >
 > The backend defines a more specific error: "Recipient signing window has expired."
 > [BACKEND-DEFINED — not surfaced to the user]
@@ -90,7 +96,7 @@ The oracle's response (after tracing both layers):
 > The signer is NOT redirected to the expired page. They remain on the signing screen
 > with an unhelpful generic error and no clear recovery path.
 >
-> This is a HIGH product risk: a signer who hits this state doesn't know their link is
+> This is a product risk: a signer who hits this state doesn't know their link is
 > expired, can't request a new one from this screen, and may try to sign repeatedly.
 
 This finding came from tracing two separate code layers — something that's invisible if

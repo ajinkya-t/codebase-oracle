@@ -18,7 +18,7 @@ The Oracle is a three-tier product intelligence cache. Each tier trades accuracy
                            │  Routes question to relevant L2 doc(s)
            ┌───────────────▼───────────────┐
            │  L2: Flow Documents           │  flows/*.md
-           │  ~3-8K tokens each            │  globals/*.md
+           │  ~1-3K tokens each            │  globals/*.md
            │  Behavior cache per flow      │  Full step-by-step,
            │  Written by oracle-init and   │  errors, access control
            │  self-improved by oracle-ask  │  side effects
@@ -26,7 +26,7 @@ The Oracle is a three-tier product intelligence cache. Each tier trades accuracy
                            │  Only on miss or explicit enrichment
            ┌───────────────▼───────────────┐
            │  L3: Live Code Exploration    │  Explore subagent
-           │  ~30-80K tokens               │  Reads actual source
+           │  ~75-104K tokens              │  Reads actual source
            │  Authoritative but expensive  │  Always writes back to L2
            └───────────────────────────────┘
 ```
@@ -36,7 +36,7 @@ The Oracle is a three-tier product intelligence cache. Each tier trades accuracy
 ### Path A — Full Cache Hit
 - L2 doc exists, source files unchanged since generation
 - Answer served exclusively from L2 doc
-- Cost: ~4K tokens, ~10 seconds
+- Cost: minimal (file reads only), 42-47s wall time
 - Prefix: `✅ VERIFIED — from cached analysis`
 
 ### Path A-Partial — Partial Coverage
@@ -143,12 +143,18 @@ oracle-ask and oracle-refresh use Explore subagents for reads, write results in 
 
 ## Design Evolution
 
-The current design went through 5 iterations driven by specific test failures:
+The current design went through 5 major iterations (9 versioned stages) driven by specific test failures:
 
-1. **v1**: Simple RAG over code. Failed: too slow, no caching.
-2. **v2**: Static docs generated once. Failed: became stale immediately.
-3. **v3**: Cache with auto-refresh on every query. Failed: defeated the cache (50K tokens every time).
-4. **v4**: Cache with staleness detection. Failed: hallucination — backend error messages reported as UI text.
-5. **v5** (current): Cache + anti-hallucination tags + user-gated escalation + self-improving write-back.
+| Version | What changed | Why |
+|---|---|---|
+| V1 | Flat product context directory, regenerated on every commit | Starting concept |
+| V2 | Three-tier L1/L2/L3 cache with lazy evaluation and write-back | Flat directory was too expensive to load and maintain |
+| V3 | Framework-agnostic archetype detection, adaptive scanning strategy | Skills assumed web app patterns; would fail on CLIs and libraries |
+| V3.1 | CLAUDE.md gets a one-liner pointer, not the full L1 map | Embedding L1 in CLAUDE.md wasted tokens on every non-oracle interaction |
+| V3.2 | Staleness via standard git post-commit hook, not a Claude Code hook | CC hooks only run when CC is active; git hooks run on every commit, zero token cost |
+| V4 | Cache discipline: explicit prohibition on auto-escalation | Testing showed 100% of partial-coverage queries silently launched Explore subagents |
+| V4.1 | Mandatory write-back on every enrichment; A-Enrich path added | Enrichments evaporated between sessions — the same information was re-discovered on every query |
+| V4.2 | User-gated [1]/[2] choice presented BEFORE answering, not after | Post-answer trace offers were skipped — the PM read the partial answer and moved on |
+| V5 | [RENDERED]/[BACKEND-DEFINED] tags; fullstack trace rule added to all exploration | Testing revealed backend-defined error text being reported as user-visible text |
 
 For deeper detail on the design rationale, see `docs/why-this-matters.md`.

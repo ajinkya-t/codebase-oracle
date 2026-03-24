@@ -80,7 +80,7 @@
   3. Signer continues filling fields unaware that the deadline has passed
   4. When the signer tries to submit a field or complete signing, the system re-checks expiration at submission time
 - Outcome: The submission fails. For individual field submissions, the signer sees a red toast notification: "An error occurred while signing the document." [RENDERED — document-signing-text-field.tsx error handler]. For the final completion dialog, the error is not specifically caught (only 2FA errors are handled), so the submission fails silently or falls through to a general error boundary. The signer is NOT redirected to the `/sign/{token}/expired` page — they remain on the signing page with their work lost.
-- Product risk: **HIGH** — The signer receives no advance warning, sees only a generic error message (not mentioning expiration), and may not understand why signing failed. Their partially completed fields are not saved.
+- Product risk: **MEDIUM** — Mid-session expiry is rare in practice: most signing windows span multiple days, so the deadline rarely passes while a page is open. But the UX when it does occur is poor: the signer receives no advance warning, sees only a generic error with no mention of expiration, and has no self-service recovery path. The fix is minimal — the frontend just needs to inspect the `RECIPIENT_EXPIRED` error code and show a targeted message. The backend already defines the right message; it's just never wired up. This backend/frontend disconnect pattern (correct error defined, never surfaced) is the more important finding.
 
 ### Recipient Rejects the Document
 - Condition: Recipient clicks the reject option
