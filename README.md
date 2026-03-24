@@ -65,7 +65,7 @@ Every query that hits L3 writes back to L2. The system gets faster and more comp
 
 ```bash
 # Install the plugin
-claude plugin add --path https://github.com/YOUR_USERNAME/codebase-oracle
+claude plugin add --path https://github.com/ajinkya-t/codebase-oracle
 
 # Navigate to any codebase
 cd your-project
