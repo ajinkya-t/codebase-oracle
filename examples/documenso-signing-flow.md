@@ -118,8 +118,8 @@
 
 ## Related Flows
 
-- [Document Creation & Sending](./document-creation-and-sending.md)
-- [Envelope Workflow](./envelope-workflow.md)
+- [Document Creation & Sending]
+- [Envelope Workflow]
 
 ## Source References
 
