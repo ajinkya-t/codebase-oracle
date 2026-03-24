@@ -163,7 +163,7 @@ Tested on Documenso (~50K LOC, TypeScript/Remix) with Claude Opus 4.6:
 | Metric | Observed |
 |---|---|
 | oracle-init time | 8m 17s (4 parallel Explore agents, ~356K tokens) |
-| Cache hit response | 42-47s wall time |
+| Cache hit response | 9–47s wall time |
 | Cache miss response | 2-3 min (includes write-back) |
 | Enrichment response | ~3 min (targeted trace + merge) |
 | Cache-served ratio (8 queries) | 87.5% (62.5% full hits + 25% enriched) |
@@ -172,12 +172,12 @@ Tested on Documenso (~50K LOC, TypeScript/Remix) with Claude Opus 4.6:
 **From the eval report (8 queries):**
 
 ```
-Actual time:      (5 × 5s) + (2 × 10s) + (1 × 60s) = 105s
-Without cache:    8 × 60s = 480s
-Time saved:       375s (~6 minutes)
+Actual time:   (5 × ~15s) + (2 × ~157s) + (1 × ~96s) = 75 + 314 + 96 ≈ 485s (~8 min)
+Without cache: 8 × ~120s = 960s (~16 min)
+Time saved:    ~475s (~8 minutes)
 ```
 
-> Note: the 5s/10s per-query figures in this calc represent answer generation time only. Full wall time per cache hit (including staleness check, L2 doc read, and formatting) is 42-47s.
+*(avg cache hit ~15s; enriched ~157s = 2m 37s observed; miss ~96s = 1m 36s observed; without-cache baseline ~120s = midpoint of 2–3 min full trace)*
 
 ---
 
