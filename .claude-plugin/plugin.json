@@ -1,8 +1,0 @@
-{
-  "name": "codebase-oracle",
-  "description": "Product intelligence over codebases. A three-tier caching system that lets PMs query what their product actually does — with confidence levels, rendering-layer verification, and self-improving cache. Works on any codebase type.",
-  "version": "1.0.0",
-  "author": {
-    "name": "Ajinkya"
-  }
-}

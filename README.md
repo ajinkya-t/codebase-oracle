@@ -4,7 +4,7 @@
 
 A product-aware RAG system where the corpus is code, the index is organized by product behavior, and the consumer is a PM.
 
-[![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-Plugin-blue)](#installation)
+[![Claude Code](https://img.shields.io/badge/Claude_Code-Skills-blue)](#installation)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Tested on](https://img.shields.io/badge/Tested_on-Documenso_50K_LOC-orange)](#what-i-found)
 
@@ -37,7 +37,7 @@ None of these are in any spec. None show up in any dashboard. They live in the c
 
 ## What this is
 
-A Claude Code plugin with six skills that build a **product intelligence cache** on top of any codebase:
+A Claude Code toolkit with six skills that build a **product intelligence cache** on top of any codebase:
 
 ```
 You ask:     "What happens when a signing link expires mid-session?"
@@ -64,8 +64,15 @@ Every query that hits L3 writes back to L2. The system gets faster and more comp
 **Prerequisites:** Claude Code ([install guide](https://code.claude.com/docs/en/setup)) with a Claude Pro ($20/month) or Max subscription.
 
 ```bash
-# Install the plugin
-claude plugin add --path https://github.com/ajinkya-t/codebase-oracle
+# Clone the repo
+git clone https://github.com/ajinkya-t/codebase-oracle
+
+# Run the setup script (symlinks skills into ~/.claude/skills/)
+cd codebase-oracle
+./setup
+
+# Verify the installation
+./setup --verify
 
 # Navigate to any codebase
 cd your-project
@@ -81,10 +88,13 @@ claude
 /oracle-ask What happens when a user tries to sign an expired document?
 ```
 
+> **Updating:** Just run `git pull` inside your clone — the setup script installs a `post-merge` hook that re-runs automatically, so new and updated skills are always reflected.
+
 **Optional: install the git hook for automatic staleness tracking**
 ```bash
-bash .claude/plugins/codebase-oracle/scripts/install-git-hook.sh
+bash ~/path/to/codebase-oracle/scripts/install-git-hook.sh
 ```
+> Run this from inside the project you want to track (not the oracle repo). Replace the path with wherever you cloned codebase-oracle.
 
 ---
 
@@ -298,4 +308,4 @@ MIT — see [LICENSE](LICENSE)
 
 ---
 
-*Built with [Claude Code](https://code.claude.com) by [Ajinkya](https://github.com/ajinkya-t). The oracle is a Claude Code plugin — it uses Claude's intelligence but the architecture, cache design, eval framework, and anti-hallucination system are original work.*
+*Built with [Claude Code](https://code.claude.com) by [Ajinkya](https://github.com/ajinkya-t). The oracle is a Claude Code toolkit — it uses Claude's intelligence but the architecture, cache design, eval framework, and anti-hallucination system are original work.*
